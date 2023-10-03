@@ -1,18 +1,8 @@
-module Yatzy exposing (Yatzi, chance, fives, fourOfAKind, fours, fullHouse, init, largeStraight, ones, pair, sixes, smallStraight, threeOfAKind, threes, twoPairs, twos, yatzy)
+module Yatzy exposing (chance, fives, fourOfAKind, fours, fullHouse, largeStraight, ones, pair, sixes, smallStraight, threeOfAKind, threes, twoPairs, twos, yatzy)
 
 import Dict exposing (Dict)
 import Dict.Extra
 import List.Extra
-
-
-type Yatzi
-    = Yatzi (List Int)
-
-
-init : Int -> Int -> Int -> Int -> Int -> Yatzi
-init d1 d2 d3 d4 d5 =
-    [ d1, d2, d3, d4, d5 ]
-        |> Yatzi
 
 
 chance : Int -> Int -> Int -> Int -> Int -> Int
@@ -43,19 +33,19 @@ threes d1 d2 d3 d4 d5 =
     countScore 3 [ d1, d2, d3, d4, d5 ]
 
 
-fours : Yatzi -> Int
-fours (Yatzi dice) =
-    countScore 4 dice
+fours : Int -> Int -> Int -> Int -> Int -> Int
+fours d1 d2 d3 d4 d5 =
+    countScore 4 [ d1, d2, d3, d4, d5 ]
 
 
-fives : Yatzi -> Int
-fives (Yatzi dice) =
-    countScore 5 dice
+fives : Int -> Int -> Int -> Int -> Int -> Int
+fives d1 d2 d3 d4 d5 =
+    countScore 5 [ d1, d2, d3, d4, d5 ]
 
 
-sixes : Yatzi -> Int
-sixes (Yatzi dice) =
-    countScore 6 dice
+sixes : Int -> Int -> Int -> Int -> Int -> Int
+sixes d1 d2 d3 d4 d5 =
+    countScore 6 [ d1, d2, d3, d4, d5 ]
 
 
 tally : Int -> Int -> Int -> Int -> Int -> Dict Int Int

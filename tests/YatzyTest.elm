@@ -164,14 +164,11 @@ threes =
 fours : Test
 fours =
     group "Fours"
-        [ Yatzy.init 4 4 4 5 5
-            |> Yatzy.fours
+        [ Yatzy.fours 4 4 4 5 5
             |> Expect.equal 12
-        , Yatzy.init 4 4 5 5 5
-            |> Yatzy.fours
+        , Yatzy.fours 4 4 5 5 5
             |> Expect.equal 8
-        , Yatzy.init 4 5 5 5 5
-            |> Yatzy.fours
+        , Yatzy.fours 4 5 5 5 5
             |> Expect.equal 4
         ]
 
@@ -179,14 +176,11 @@ fours =
 fives : Test
 fives =
     group "Fives"
-        [ Yatzy.init 4 4 4 5 5
-            |> Yatzy.fives
+        [ Yatzy.fives 4 4 4 5 5
             |> Expect.equal 10
-        , Yatzy.init 4 4 5 5 5
-            |> Yatzy.fives
+        , Yatzy.fives 4 4 5 5 5
             |> Expect.equal 15
-        , Yatzy.init 4 5 5 5 5
-            |> Yatzy.fives
+        , Yatzy.fives 4 5 5 5 5
             |> Expect.equal 20
         ]
 
@@ -194,14 +188,11 @@ fives =
 sixes : Test
 sixes =
     group "Sixes"
-        [ Yatzy.init 4 4 4 5 5
-            |> Yatzy.sixes
+        [ Yatzy.sixes 4 4 4 5 5
             |> Expect.equal 0
-        , Yatzy.init 4 4 6 5 5
-            |> Yatzy.sixes
+        , Yatzy.sixes 4 4 6 5 5
             |> Expect.equal 6
-        , Yatzy.init 6 5 6 6 5
-            |> Yatzy.sixes
+        , Yatzy.sixes 6 5 6 6 5
             |> Expect.equal 18
         ]
 
