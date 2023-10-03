@@ -3,7 +3,6 @@ module Yatzy exposing (Yatzi, chance, fives, fourOfAKind, fours, fullHouse, larg
 import Array exposing (Array)
 import Dict exposing (Dict)
 import Dict.Extra
-import List.Extra
 
 
 chance : Int -> Int -> Int -> Int -> Int -> Int
@@ -151,26 +150,21 @@ threes d1 d2 d3 d4 d5 =
 
 
 type Yatzi
-    = Yatzi (Array Int)
+    = Yatzi (List Int)
 
 
 new : Int -> Int -> Int -> Int -> Int -> Yatzi
-new d1 d2 d3 d4 d_5 =
-    Array.repeat 5 0
-        |> Array.set 0 d1
-        |> Array.set 1 d2
-        |> Array.set 2 d3
-        |> Array.set 3 d4
-        |> Array.set 4 d_5
+new d1 d2 d3 d4 d5 =
+    [ d1, d2, d3, d4, d5 ]
         |> Yatzi
 
 
 fives : Yatzi -> Int
 fives (Yatzi dice) =
-    List.range 0 (Array.length dice)
+    dice
         |> List.foldl
             (\i s ->
-                if unsafeGet dice i == 5 then
+                if i == 5 then
                     s + 5
 
                 else
@@ -187,21 +181,8 @@ fourOfAKind d1 d2 d3 d4 d5 =
             tally d1 d2 d3 d4 d5
     in
     tallies
-        |> Dict.toList
-        |> List.Extra.findMap
-            (\( i, count ) ->
-                if count >= 4 then
-                    Just <| i * 4
-
-                else
-                    Nothing
-            )
-        |> Maybe.withDefault 0
-
-
-get : Int -> Dict Int Int -> Int
-get index dict =
-    Dict.get index dict
+        |> Dict.Extra.find (\_ count -> count >= 4)
+        |> Maybe.map (\( i, _ ) -> i * 4)
         |> Maybe.withDefault 0
 
 
@@ -213,10 +194,10 @@ tally d1 d2 d3 d4 d5 =
 
 fours : Yatzi -> Int
 fours (Yatzi dice) =
-    List.range 0 (Array.length dice)
+    dice
         |> List.foldl
             (\i s ->
-                if unsafeGet dice i == 4 then
+                if i == 4 then
                     s + 4
 
                 else
@@ -228,73 +209,33 @@ fours (Yatzi dice) =
 fullHouse : Int -> Int -> Int -> Int -> Int -> Int
 fullHouse d1 d2 d3 d4 d5 =
     let
+        tallies : Dict Int Int
         tallies =
             tally d1 d2 d3 d4 d5
 
-        ( t_2, t_2_at ) =
-            List.range 1 6
-                |> List.foldl
-                    (\i acc ->
-                        if get i tallies == 2 then
-                            ( True, i )
+        pair : Maybe ( Int, Int )
+        pair =
+            Dict.Extra.find
+                (\_ count -> count == 2)
+                tallies
 
-                        else
-                            acc
-                    )
-                    ( False, 0 )
-
-        ( t_3, t_3_at ) =
-            List.range 1 6
-                |> List.foldl
-                    (\i acc ->
-                        if get i tallies == 3 then
-                            ( True, i )
-
-                        else
-                            acc
-                    )
-                    ( False, 0 )
+        triple : Maybe ( Int, Int )
+        triple =
+            Dict.Extra.find
+                (\_ count -> count == 3)
+                tallies
     in
-    if t_2 && t_3 then
-        t_2_at * 2 + t_3_at * 3
+    case ( pair, triple ) of
+        ( Just ( pairValue, _ ), Just ( tripleValue, _ ) ) ->
+            pairValue * 2 + tripleValue * 3
 
-    else
-        0
+        _ ->
+            0
 
 
 largeStraight : Int -> Int -> Int -> Int -> Int -> Int
 largeStraight d1 d2 d3 d4 d5 =
-    let
-        tallies =
-            Array.repeat 6 0
-
-        tallies_1 =
-            tallies
-                |> Array.set (d1 - 1) (unsafeGet tallies (d1 - 1) + 1)
-
-        tallies_2 =
-            tallies_1
-                |> Array.set (d2 - 1) (unsafeGet tallies_1 (d2 - 1) + 1)
-
-        tallies_3 =
-            tallies_2
-                |> Array.set (d3 - 1) (unsafeGet tallies_2 (d3 - 1) + 1)
-
-        tallies_4 =
-            tallies_3
-                |> Array.set (d4 - 1) (unsafeGet tallies_3 (d4 - 1) + 1)
-
-        tallies_5 =
-            tallies_4
-                |> Array.set (d5 - 1) (unsafeGet tallies_4 (d5 - 1) + 1)
-    in
-    if
-        (unsafeGet tallies_5 1 == 1)
-            && (unsafeGet tallies_5 2 == 1)
-            && (unsafeGet tallies_5 3 == 1)
-            && (unsafeGet tallies_5 4 == 1)
-            && (unsafeGet tallies_5 5 == 1)
-    then
+    if List.sort [ d1, d2, d3, d4, d5 ] == List.range 2 6 then
         20
 
     else
@@ -343,10 +284,10 @@ scorePair d1 d2 d3 d4 d5 =
 
 sixes : Yatzi -> Int
 sixes (Yatzi dice) =
-    List.range 0 (Array.length dice - 1)
+    dice
         |> List.foldl
             (\at sum ->
-                if unsafeGet dice at == 6 then
+                if at == 6 then
                     sum + 6
 
                 else
@@ -357,60 +298,30 @@ sixes (Yatzi dice) =
 
 yatzy : List Int -> Int
 yatzy dice =
-    let
-        counts =
-            List.foldl
-                (\die counts_ ->
-                    Array.set (die - 1) (unsafeGet counts_ (die - 1) + 1) counts_
-                )
-                (Array.repeat 6 0)
-                dice
+    case dice of
+        [] ->
+            0
 
-        go i =
-            if i /= 6 then
-                if unsafeGet counts i == 5 then
-                    50
-
-                else
-                    go (i + 1)
+        first :: rest ->
+            if List.all (\die -> die == first) rest then
+                50
 
             else
                 0
-    in
-    go 0
 
 
 twoPair : Int -> Int -> Int -> Int -> Int -> Int
 twoPair d1 d2 d3 d4 d5 =
     let
-        counts =
-            Array.repeat 6 0
-
-        counts_1 =
-            counts
-                |> Array.set (d1 - 1) (unsafeGet counts (d1 - 1) + 1)
-
-        counts_2 =
-            counts_1
-                |> Array.set (d2 - 1) (unsafeGet counts_1 (d2 - 1) + 1)
-
-        counts_3 =
-            counts_2
-                |> Array.set (d3 - 1) (unsafeGet counts_2 (d3 - 1) + 1)
-
-        counts_4 =
-            counts_3
-                |> Array.set (d4 - 1) (unsafeGet counts_3 (d4 - 1) + 1)
-
-        counts_5 =
-            counts_4
-                |> Array.set (d5 - 1) (unsafeGet counts_4 (d5 - 1) + 1)
+        tallies : Dict Int Int
+        tallies =
+            tally d1 d2 d3 d4 d5
 
         ( n, score ) =
             List.range 0 5
                 |> List.foldl
                     (\i ( n_, score_ ) ->
-                        if unsafeGet counts_5 (6 - i - 1) >= 2 then
+                        if unsafeGetDict tallies (6 - i) >= 2 then
                             ( n_ + 1, score_ + 6 - i )
 
                         else
@@ -425,73 +336,22 @@ twoPair d1 d2 d3 d4 d5 =
         0
 
 
+unsafeGetDict : Dict comparable number -> comparable -> number
+unsafeGetDict dict index =
+    Dict.get index dict |> Maybe.withDefault -1
+
+
 threeOfAKind : Int -> Int -> Int -> Int -> Int -> Int
 threeOfAKind d1 d2 d3 d4 d5 =
-    let
-        t =
-            Array.repeat 6 0
-
-        t_1 =
-            t
-                |> Array.set (d1 - 1) (unsafeGet t (d1 - 1) + 1)
-
-        t_2 =
-            t_1
-                |> Array.set (d2 - 1) (unsafeGet t_1 (d2 - 1) + 1)
-
-        t_3 =
-            t_2
-                |> Array.set (d3 - 1) (unsafeGet t_2 (d3 - 1) + 1)
-
-        t_4 =
-            t_3
-                |> Array.set (d4 - 1) (unsafeGet t_3 (d4 - 1) + 1)
-
-        t_5 =
-            t_4
-                |> Array.set (d5 - 1) (unsafeGet t_4 (d5 - 1) + 1)
-
-        go i =
-            if i < 6 then
-                if unsafeGet t_5 i >= 3 then
-                    (i + 1) * 3
-
-                else
-                    go (i + 1)
-
-            else
-                0
-    in
-    go 0
+    tally d1 d2 d3 d4 d5
+        |> Dict.Extra.find (\_ count -> count >= 3)
+        |> Maybe.map (\( i, _ ) -> i * 3)
+        |> Maybe.withDefault 0
 
 
 smallStraight : Int -> Int -> Int -> Int -> Int -> Int
 smallStraight d1 d2 d3 d4 d5 =
-    let
-        tallies =
-            Array.repeat 6 0
-
-        tallies_1 =
-            tallies
-                |> Array.set (d1 - 1) (unsafeGet tallies (d1 - 1) + 1)
-
-        tallies_2 =
-            tallies_1
-                |> Array.set (d2 - 1) (unsafeGet tallies_1 (d2 - 1) + 1)
-
-        tallies_3 =
-            tallies_2
-                |> Array.set (d3 - 1) (unsafeGet tallies_2 (d3 - 1) + 1)
-
-        tallies_4 =
-            tallies_3
-                |> Array.set (d4 - 1) (unsafeGet tallies_3 (d4 - 1) + 1)
-
-        tallies_5 =
-            tallies_4
-                |> Array.set (d5 - 1) (unsafeGet tallies_4 (d5 - 1) + 1)
-    in
-    if unsafeGet tallies_5 0 == 1 && unsafeGet tallies_5 1 == 1 && unsafeGet tallies_5 2 == 1 && unsafeGet tallies_5 3 == 1 && unsafeGet tallies_5 4 == 1 then
+    if List.sort [ d1, d2, d3, d4, d5 ] == List.range 1 5 then
         15
 
     else
