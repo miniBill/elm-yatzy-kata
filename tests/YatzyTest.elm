@@ -106,11 +106,11 @@ fullHouse =
 yatzy : Test
 yatzy =
     group "Yatzy scores 50"
-        [ Yatzy.yatzy [ 4, 4, 4, 4, 4 ]
+        [ Yatzy.yatzy 4 4 4 4 4
             |> Expect.equal 50
-        , Yatzy.yatzy [ 6, 6, 6, 6, 6 ]
+        , Yatzy.yatzy 6 6 6 6 6
             |> Expect.equal 50
-        , Yatzy.yatzy [ 6, 6, 6, 6, 3 ]
+        , Yatzy.yatzy 6 6 6 6 3
             |> Expect.equal 0
         ]
 

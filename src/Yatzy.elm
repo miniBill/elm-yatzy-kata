@@ -104,18 +104,13 @@ pair d1 d2 d3 d4 d5 =
         |> Maybe.withDefault 0
 
 
-yatzy : List Int -> Int
-yatzy dice =
-    case dice of
-        [] ->
-            0
+yatzy : Int -> Int -> Int -> Int -> Int -> Int
+yatzy d1 d2 d3 d4 d5 =
+    if d1 == d2 && d2 == d3 && d3 == d4 && d4 == d5 then
+        50
 
-        first :: rest ->
-            if List.all (\die -> die == first) rest then
-                50
-
-            else
-                0
+    else
+        0
 
 
 twoPairs : Int -> Int -> Int -> Int -> Int -> Int
