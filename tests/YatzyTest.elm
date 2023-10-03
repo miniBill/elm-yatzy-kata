@@ -59,17 +59,17 @@ suite =
         , describe "fives"
             [ test "1" <|
                 \_ ->
-                    Yatzy.new 4 4 4 5 5
+                    Yatzy.init 4 4 4 5 5
                         |> Yatzy.fives
                         |> Expect.equal 10
             , test "2" <|
                 \_ ->
-                    Yatzy.new 4 4 5 5 5
+                    Yatzy.init 4 4 5 5 5
                         |> Yatzy.fives
                         |> Expect.equal 15
             , test "3" <|
                 \_ ->
-                    Yatzy.new 4 5 5 5 5
+                    Yatzy.init 4 5 5 5 5
                         |> Yatzy.fives
                         |> Expect.equal 20
             ]
@@ -90,17 +90,17 @@ suite =
         , describe "fours_Fact"
             [ test "1" <|
                 \_ ->
-                    Yatzy.new 4 4 4 5 5
+                    Yatzy.init 4 4 4 5 5
                         |> Yatzy.fours
                         |> Expect.equal 12
             , test "2" <|
                 \_ ->
-                    Yatzy.new 4 4 5 5 5
+                    Yatzy.init 4 4 5 5 5
                         |> Yatzy.fours
                         |> Expect.equal 8
             , test "3" <|
                 \_ ->
-                    Yatzy.new 4 5 5 5 5
+                    Yatzy.init 4 5 5 5 5
                         |> Yatzy.fours
                         |> Expect.equal 4
             ]
@@ -145,17 +145,17 @@ suite =
         , describe "sixes_Fact"
             [ test "1" <|
                 \_ ->
-                    Yatzy.new 4 4 4 5 5
+                    Yatzy.init 4 4 4 5 5
                         |> Yatzy.sixes
                         |> Expect.equal 0
             , test "2" <|
                 \_ ->
-                    Yatzy.new 4 4 6 5 5
+                    Yatzy.init 4 4 6 5 5
                         |> Yatzy.sixes
                         |> Expect.equal 6
             , test "3" <|
                 \_ ->
-                    Yatzy.new 6 5 6 6 5
+                    Yatzy.init 6 5 6 6 5
                         |> Yatzy.sixes
                         |> Expect.equal 18
             ]
