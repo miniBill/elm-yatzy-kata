@@ -20,11 +20,8 @@ chance d1 d2 d3 d4 d5 =
 
         total_4 =
             total_3 + d4
-
-        total_5 =
-            total_4 + d5
     in
-    total_5
+    total_4 + d5
 
 
 ones : Int -> Int -> Int -> Int -> Int -> Int
@@ -60,15 +57,12 @@ ones d1 d2 d3 d4 d5 =
 
             else
                 sum_3
-
-        sum_5 =
-            if d5 == 1 then
-                sum_4 + 1
-
-            else
-                sum_4
     in
-    sum_5
+    if d5 == 1 then
+        sum_4 + 1
+
+    else
+        sum_4
 
 
 twos : Int -> Int -> Int -> Int -> Int -> Int
@@ -104,15 +98,12 @@ twos d1 d2 d3 d4 d5 =
 
             else
                 sum_3
-
-        sum_5 =
-            if d5 == 2 then
-                sum_4 + 2
-
-            else
-                sum_4
     in
-    sum_5
+    if d5 == 2 then
+        sum_4 + 2
+
+    else
+        sum_4
 
 
 threes : Int -> Int -> Int -> Int -> Int -> Int
@@ -148,15 +139,12 @@ threes d1 d2 d3 d4 d5 =
 
             else
                 s_3
-
-        s_5 =
-            if d5 == 3 then
-                s_4 + 3
-
-            else
-                s_4
     in
-    s_5
+    if d5 == 3 then
+        s_4 + 3
+
+    else
+        s_4
 
 
 type Yatzi
