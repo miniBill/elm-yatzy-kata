@@ -1,4 +1,4 @@
-module Yatzy exposing (Yatzi, chance, fives, fourOfAKind, fours, fullHouse, init, largeStraight, ones, scorePair, sixes, smallStraight, threeOfAKind, threes, twoPair, twos, yatzy)
+module Yatzy exposing (Yatzi, chance, fives, fourOfAKind, fours, fullHouse, init, largeStraight, ones, pair, sixes, smallStraight, threeOfAKind, threes, twoPairs, twos, yatzy)
 
 import Dict exposing (Dict)
 import Dict.Extra
@@ -104,8 +104,8 @@ largeStraight d1 d2 d3 d4 d5 =
         0
 
 
-scorePair : Int -> Int -> Int -> Int -> Int -> Int
-scorePair d1 d2 d3 d4 d5 =
+pair : Int -> Int -> Int -> Int -> Int -> Int
+pair d1 d2 d3 d4 d5 =
     let
         counts_5 : Dict Int Int
         counts_5 =
@@ -140,8 +140,8 @@ yatzy dice =
                 0
 
 
-twoPair : Int -> Int -> Int -> Int -> Int -> Int
-twoPair d1 d2 d3 d4 d5 =
+twoPairs : Int -> Int -> Int -> Int -> Int -> Int
+twoPairs d1 d2 d3 d4 d5 =
     let
         tallies : Dict Int Int
         tallies =
