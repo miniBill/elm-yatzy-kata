@@ -1,6 +1,9 @@
 module Yatzy exposing (Yatzi, chance, fives, fourOfAKind, fours, fullHouse, largeStraight, new, ones, scorePair, sixes, smallStraight, threeOfAKind, threes, twoPair, twos, yatzy)
 
 import Array exposing (Array)
+import Dict exposing (Dict)
+import Dict.Extra
+import List.Extra
 
 
 chance : Int -> Int -> Int -> Int -> Int -> Int
@@ -177,43 +180,35 @@ fives (Yatzi dice) =
 
 
 fourOfAKind : Int -> Int -> Int -> Int -> Int -> Int
-fourOfAKind d_1 d_2 d3 d4 d5 =
+fourOfAKind d1 d2 d3 d4 d5 =
     let
+        tallies : Dict Int Int
         tallies =
-            Array.repeat 6 0
-
-        tallies_1 =
-            tallies
-                |> Array.set (d_1 - 1) (unsafeGet tallies (d_1 - 1) + 1)
-
-        tallies_2 =
-            tallies_1
-                |> Array.set (d_2 - 1) (unsafeGet tallies_1 (d_2 - 1) + 1)
-
-        tallies_3 =
-            tallies_2
-                |> Array.set (d3 - 1) (unsafeGet tallies_2 (d3 - 1) + 1)
-
-        tallies_4 =
-            tallies_3
-                |> Array.set (d4 - 1) (unsafeGet tallies_3 (d4 - 1) + 1)
-
-        tallies_5 =
-            tallies_4
-                |> Array.set (d5 - 1) (unsafeGet tallies_4 (d5 - 1) + 1)
-
-        check i =
-            if i < 6 then
-                if unsafeGet tallies_5 i >= 4 then
-                    (i + 1) * 4
+            tally d1 d2 d3 d4 d5
+    in
+    tallies
+        |> Dict.toList
+        |> List.Extra.findMap
+            (\( i, count ) ->
+                if count >= 4 then
+                    Just <| i * 4
 
                 else
-                    check (i + 1)
+                    Nothing
+            )
+        |> Maybe.withDefault 0
 
-            else
-                0
-    in
-    check 0
+
+get : Int -> Dict Int Int -> Int
+get index dict =
+    Dict.get index dict
+        |> Maybe.withDefault 0
+
+
+tally : Int -> Int -> Int -> Int -> Int -> Dict Int Int
+tally d1 d2 d3 d4 d5 =
+    [ d1, d2, d3, d4, d5 ]
+        |> Dict.Extra.frequencies
 
 
 fours : Yatzi -> Int
@@ -234,34 +229,14 @@ fullHouse : Int -> Int -> Int -> Int -> Int -> Int
 fullHouse d1 d2 d3 d4 d5 =
     let
         tallies =
-            Array.repeat 6 0
-
-        tallies_1 =
-            tallies
-                |> Array.set (d1 - 1) (unsafeGet tallies (d1 - 1) + 1)
-
-        tallies_2 =
-            tallies_1
-                |> Array.set (d2 - 1) (unsafeGet tallies_1 (d2 - 1) + 1)
-
-        tallies_3 =
-            tallies_2
-                |> Array.set (d3 - 1) (unsafeGet tallies_2 (d3 - 1) + 1)
-
-        tallies_4 =
-            tallies_3
-                |> Array.set (d4 - 1) (unsafeGet tallies_3 (d4 - 1) + 1)
-
-        tallies_5 =
-            tallies_4
-                |> Array.set (d5 - 1) (unsafeGet tallies_4 (d5 - 1) + 1)
+            tally d1 d2 d3 d4 d5
 
         ( t_2, t_2_at ) =
-            List.range 0 5
+            List.range 1 6
                 |> List.foldl
                     (\i acc ->
-                        if unsafeGet tallies_5 i == 2 then
-                            ( True, i + 1 )
+                        if get i tallies == 2 then
+                            ( True, i )
 
                         else
                             acc
@@ -269,11 +244,11 @@ fullHouse d1 d2 d3 d4 d5 =
                     ( False, 0 )
 
         ( t_3, t_3_at ) =
-            List.range 0 5
+            List.range 1 6
                 |> List.foldl
                     (\i acc ->
-                        if unsafeGet tallies_5 i == 3 then
-                            ( True, i + 1 )
+                        if get i tallies == 3 then
+                            ( True, i )
 
                         else
                             acc
