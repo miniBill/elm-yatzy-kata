@@ -58,6 +58,12 @@ sixes (Yatzi dice) =
     countScore 6 dice
 
 
+tally : Int -> Int -> Int -> Int -> Int -> Dict Int Int
+tally d1 d2 d3 d4 d5 =
+    [ d1, d2, d3, d4, d5 ]
+        |> Dict.Extra.frequencies
+
+
 fourOfAKind : Int -> Int -> Int -> Int -> Int -> Int
 fourOfAKind d1 d2 d3 d4 d5 =
     let
@@ -69,12 +75,6 @@ fourOfAKind d1 d2 d3 d4 d5 =
         |> Dict.Extra.find (\_ count -> count >= 4)
         |> Maybe.map (\( i, _ ) -> i * 4)
         |> Maybe.withDefault 0
-
-
-tally : Int -> Int -> Int -> Int -> Int -> Dict Int Int
-tally d1 d2 d3 d4 d5 =
-    [ d1, d2, d3, d4, d5 ]
-        |> Dict.Extra.frequencies
 
 
 fullHouse : Int -> Int -> Int -> Int -> Int -> Int
@@ -106,24 +106,12 @@ largeStraight d1 d2 d3 d4 d5 =
 
 pair : Int -> Int -> Int -> Int -> Int -> Int
 pair d1 d2 d3 d4 d5 =
-    let
-        counts_5 : Dict Int Int
-        counts_5 =
-            tally d1 d2 d3 d4 d5
-
-        go : Int -> Int
-        go at =
-            if at /= 6 then
-                if unsafeGetDict counts_5 (6 - at) >= 2 then
-                    (6 - at) * 2
-
-                else
-                    go (at + 1)
-
-            else
-                0
-    in
-    go 0
+    tally d1 d2 d3 d4 d5
+        |> Dict.toList
+        |> List.reverse
+        |> List.Extra.find (\( _, count ) -> count >= 2)
+        |> Maybe.map (\( die, _ ) -> die * 2)
+        |> Maybe.withDefault 0
 
 
 yatzy : List Int -> Int
@@ -146,29 +134,13 @@ twoPairs d1 d2 d3 d4 d5 =
         tallies : Dict Int Int
         tallies =
             tally d1 d2 d3 d4 d5
-
-        ( n, score ) =
-            List.range 0 5
-                |> List.foldl
-                    (\i ( n_, score_ ) ->
-                        if unsafeGetDict tallies (6 - i) >= 2 then
-                            ( n_ + 1, score_ + 6 - i )
-
-                        else
-                            ( n_, score_ )
-                    )
-                    ( 0, 0 )
     in
-    if n == 2 then
-        score * 2
+    case List.filter (\( _, count ) -> count >= 2) (Dict.toList tallies) of
+        [ ( first, _ ), ( second, _ ) ] ->
+            (first + second) * 2
 
-    else
-        0
-
-
-unsafeGetDict : Dict comparable number -> comparable -> number
-unsafeGetDict dict index =
-    Dict.get index dict |> Maybe.withDefault -1
+        _ ->
+            0
 
 
 threeOfAKind : Int -> Int -> Int -> Int -> Int -> Int
